@@ -5,6 +5,11 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Division\DivisionStoreRequest;
 use App\Models\Division;
 use App\Http\Requests\Division\DivisionUpdateRequest;
+use GuzzleHttp\Exception\ServerException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Database\RecordNotFoundException;
+use Illuminate\Http\JsonResponse;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 
 class DivisionsController extends Controller
@@ -24,21 +29,15 @@ class DivisionsController extends Controller
     /**
      * Получить информацию о конкретном подразделении
      */
-    public function show($id)
+    public function show($id): Division
     {
         $division = Division::find($id);
         
         if (!$division) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Подразделение не найдено'
-            ], 404);
+            throw new NotFoundHttpException("Not found ex");
         }
 
-        return response()->json([
-            'success' => true,
-            'data' => $division
-        ]);
+        return $division;
     }
 
     /**
