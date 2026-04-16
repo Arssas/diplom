@@ -12,10 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('events', function (Blueprint $table) {
-            $table->id('event_id'); // ID События (PK)
+            $table->id('id'); // ID События (PK)
             $table->string('employee_card_id'); // ID карты сотрудника (FK)
-            $table->datetime('event_datetime'); // Дата и время
-            $table->enum('event_type', [
+            $table->datetime('datetime'); // Дата и время
+            $table->enum('type', [
                 'entry',        // Вход
                 'exit',         // Выход
                 'break_start',  // Начало перерыва
@@ -28,18 +28,18 @@ return new class extends Migration
             
             // Внешний ключ к таблице табеля сотрудников (по ID карты)
             $table->foreign('employee_card_id')
-                  ->references('employee_card_id')
+                  ->references('card_id')
                   ->on('employees')
                   ->onDelete('cascade')
                   ->onUpdate('cascade');
                   
             // Индексы
             $table->index('employee_card_id');
-            $table->index('event_datetime');
-            $table->index('event_type');
+            $table->index('datetime');
+            $table->index('type');
             
             // Составной индекс для частых запросов по карте и дате
-            $table->index(['employee_card_id', 'event_datetime']);
+            $table->index(['employee_card_id', 'datetime']);
         });
     }
 

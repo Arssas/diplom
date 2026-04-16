@@ -10,15 +10,10 @@ class Employee extends Model
     protected $primaryKey = 'id';
     public $timestamps = false;
     protected $fillable = [
-        'employee_card_id',
+        'card_id',
         'full_name', 
         'phone_number',
         'position',
         'division_id'
     ];
-
-    public function employees()
-    {
-        return $this->hasMany(Employee::class, 'division_id', 'division_id');
-    }
 }                    

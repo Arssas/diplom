@@ -15,7 +15,7 @@ class EmployeeStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'employee_card_id' => 'integer|max:100|required|unique:employees',
+            'card_id' => 'integer|max:100|required|unique:employees',
             'full_name' => 'string|max:100|required', 
             'phone_number' => 'string|max:100|required|unique:employees',
             'position' => 'string|max:100',

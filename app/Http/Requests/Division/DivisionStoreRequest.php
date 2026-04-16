@@ -15,7 +15,7 @@ class DivisionStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'division_name' => 'string|max:100|required|unique:divisions',
+            'name' => 'string|max:100|required|unique:divisions',
             'manager_full_name' => 'string|max:100|required'
         ];
     }

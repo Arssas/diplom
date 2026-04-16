@@ -16,7 +16,7 @@ class DivisionUpdateRequest extends FormRequest
     {
         
         return [
-            'division_name' => 'string|max:255|unique:divisions',
+            'name' => 'string|max:255|unique:divisions',
             'manager_full_name' => 'nullable|string|max:255'
         ];
     }

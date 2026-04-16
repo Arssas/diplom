@@ -12,12 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('divisions', function (Blueprint $table) {
-            $table->id('division_id'); // ID подразделения (PK)
-            $table->string('division_name'); // Название отдела
+            $table->id('id'); // ID подразделения (PK)
+            $table->string('name'); // Название отдела
             $table->string('manager_full_name')->nullable(); // ФИО руководителя
             
             //Индексы
-            $table->index('division_name');
+            $table->index('name');
             $table->index('manager_full_name');
         });
     }

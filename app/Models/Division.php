@@ -7,15 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 class Division extends Model
 {
     protected $table = 'divisions';
-    protected $primaryKey = 'division_id';
+    protected $primaryKey = 'id';
     public $timestamps = false;
     protected $fillable = [
-        'division_name',
+        'name',
         'manager_full_name'
     ];
-
-    public function employees()
-    {
-        return $this->hasMany(Employee::class, 'division_id', 'division_id');
-    }
 }                    

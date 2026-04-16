@@ -17,9 +17,9 @@ class EventsStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'event_type' => ['required', Rule::enum(EventTypes::class)],
+            'type' => ['required', Rule::enum(EventTypes::class)],
             'employee_card_id' => 'integer|max:100|required',
-            'event_datetime' =>  'required|date',
+            'datetime' =>  'required|date',
         ];
     }
 }

@@ -11,12 +11,7 @@ class Events extends Model
     public $timestamps = false;
     protected $fillable = [
         'employee_card_id',
-        'event_datetime',
-        'event_type',
+        'datetime',
+        'type',
     ];
-
-    public function employees()
-    {
-        return $this->hasMany(Employee::class, 'event_id', 'event_id');
-    }
 }                    

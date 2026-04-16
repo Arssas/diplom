@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('employees', function (Blueprint $table) {
             $table->id('id'); // ID записи (PK)
-            $table->string('employee_card_id')->unique(); // ID Карты сотрудника
+            $table->string('card_id')->unique(); // ID Карты сотрудника
             $table->string('full_name'); // ФИО сотрудника
             $table->string('phone_number'); // Телефонный номер сотрудника
             $table->string('position'); // Должность сотрудника
@@ -21,16 +21,16 @@ return new class extends Migration
             
             // Внешний ключ к таблице подразделений
             $table->foreign('division_id')
-                  ->references('division_id')
+                  ->references('id')
                   ->on('divisions')
                   ->onDelete('restrict')
                   ->onUpdate('cascade');
                   
             // Индексы
-            $table->index('employee_card_id');
+            $table->index('card_id');
             $table->index('full_name');
             $table->index('division_id');
-            $table->index('status');
+            // $table->index('status');
         });
     }
 
