@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Database\QueryException;
 use Illuminate\Validation\ValidationException;
 use App\Http\Middleware\ApiResponseWrapper;
 use Illuminate\Foundation\Application;
@@ -25,6 +26,7 @@ return Application::configure(basePath: dirname(__DIR__))
                     $e instanceof NotFoundHttpException,
                     $e instanceof ModelNotFoundException => 404,
                     $e instanceof ValidationException => 422,
+                    $e instanceof QueryException => 400,
                     default => 500,
                 };
                 
