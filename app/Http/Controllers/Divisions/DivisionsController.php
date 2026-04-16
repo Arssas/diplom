@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Divisions;
 
 use App\Http\Requests\Division\DivisionStoreRequest;
 use App\Models\Division;
@@ -9,7 +9,7 @@ use App\Http\Requests\Division\DivisionUpdateRequest;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 
-class DivisionsController extends Controller
+class DivisionsController
 {
     /**
      * Получить список всех подразделений

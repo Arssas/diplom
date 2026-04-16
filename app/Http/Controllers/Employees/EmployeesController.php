@@ -1,22 +1,21 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Employees;
 
 use App\Http\Requests\Employee\EmployeeStoreRequest;
 use App\Models\Employee;
 use App\Http\Requests\Employee\EmployeeUpdateRequest;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-
-class EmployeeController extends Controller
+class EmployeesController
 {
     /**
      * Получить список всех сотрудников
      */
     public function index()
     {
-        $employee = Employee::all();
-        return $employee;
+        $employees = Employee::all();
+        return $employees;
     }
 
     /**

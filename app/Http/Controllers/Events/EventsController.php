@@ -1,21 +1,21 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Events;
 
 use App\Http\Requests\Events\EventsStoreRequest;
 use App\Models\Events;
 use App\Http\Requests\Events\EventsUpdateRequest;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-class EventsController extends Controller
+class EventsController
 {
     /**
      * Получить список всех событий
      */
     public function index()
     {
-        $event = Events::all();
-        return $event;
+        $events = Events::all();
+        return $events;
     }
 
     /**
