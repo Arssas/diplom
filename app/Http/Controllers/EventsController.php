@@ -6,7 +6,7 @@ use App\Enums\EventTypes;
 use App\Http\Requests\Events\EventsStoreRequest;
 use App\Models\Events;
 use App\Http\Requests\Events\EventsUpdateRequest;
-
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class EventsController extends Controller
 {
@@ -16,10 +16,8 @@ class EventsController extends Controller
     public function index()
     {
         $event = Events::all();
-        return response()->json([
-            'success' => true,
-            'data'=> $event
-        ]);
+        return $event;
+        
     }
 
     /**
@@ -30,16 +28,11 @@ class EventsController extends Controller
         $event = Events::find($id);
         
         if (!$event) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Событие не найдено'
-            ], 404);
+            throw new NotFoundHttpException("событие не найдено");
         }
 
-        return response()->json([
-            'success' => true,
-            'data' => $event
-        ]);
+        return $event;
+
     }
 
     /**
@@ -49,7 +42,7 @@ class EventsController extends Controller
     {
         $event = Events::create($request->validated());
 
-        return response()->json($event, 201);
+        return $event;
     }
 
     /**
@@ -60,9 +53,12 @@ class EventsController extends Controller
         $id = $request->route("id");
         $event = Events::find($id);
 
+        if ($event) {
+            throw new NotFoundHttpException("событие не найдено");
+        }
         $event->update($request->only(['employee_card_id', 'event_datetime', 'event_type']));
 
-        return response()->json($event,201);
+        return $event;
     }
 
     /**
@@ -72,18 +68,12 @@ class EventsController extends Controller
     {
         $event = Events::find($id);
 
-        if (!$event) {
-            return response()->json([
-                'success' => false,
-                'message' => 'событие не найдено'
-            ], 404);
+        if ($event) {
+            throw new NotFoundHttpException("событие не найдено");
         }
 
         $event->delete();
 
-        return response()->json([
-            'success' => true,
-            'message' => 'событие успешно удалено'
-        ]);
+        return $event;
     }
 }

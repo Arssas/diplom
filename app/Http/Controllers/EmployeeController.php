@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Employee\EmployeeStoreRequest;
 use App\Models\Employee;
 use App\Http\Requests\Employee\EmployeeUpdateRequest;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 
 class EmployeeController extends Controller
@@ -15,10 +16,8 @@ class EmployeeController extends Controller
     public function index()
     {
         $employee = Employee::all();
-        return response()->json([
-            'success' => true,
-            'data'=> $employee
-        ]);
+        return $employee;
+        
     }
 
     /**
@@ -29,16 +28,11 @@ class EmployeeController extends Controller
         $employee = Employee::find($id);
         
         if (!$employee) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Событие не найдено'
-            ], 404);
+            throw new NotFoundHttpException("Сотрудник не найден");
         }
 
-        return response()->json([
-            'success' => true,
-            'data' => $employee
-        ]);
+        return $employee;
+
     }
 
     /**
@@ -48,7 +42,7 @@ class EmployeeController extends Controller
     {
         $employee = Employee::create($request->validated());
 
-        return response()->json($employee, 201);
+        return $employee;
     }
 
     /**
@@ -56,12 +50,19 @@ class EmployeeController extends Controller
      */
     public function update(EmployeeUpdateRequest $request )
     {
+        
         $id = $request->route("id");
+        
         $employee = Employee::find($id);
 
+         if (!$employee) {
+            throw new NotFoundHttpException("Сотрудник не найден");
+        }
+        
         $employee->update($request->only(['employee_card_id', 'full_name', 'phone_number', 'position', 'division_id']));
 
-        return response()->json($employee,201);
+        
+        return $employee;
     }
 
     /**
@@ -72,17 +73,11 @@ class EmployeeController extends Controller
         $employee = Employee::find($id);
 
         if (!$employee) {
-            return response()->json([
-                'success' => false,
-                'message' => 'событие не найдено'
-            ], 404);
+            throw new NotFoundHttpException("Сотрудник не найден");
         }
 
         $employee->delete();
 
-        return response()->json([
-            'success' => true,
-            'message' => 'событие успешно удалено'
-        ]);
+        return $employee;
     }
 }

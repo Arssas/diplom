@@ -5,10 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Division\DivisionStoreRequest;
 use App\Models\Division;
 use App\Http\Requests\Division\DivisionUpdateRequest;
-use GuzzleHttp\Exception\ServerException;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Database\RecordNotFoundException;
-use Illuminate\Http\JsonResponse;
+
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 
@@ -20,10 +17,7 @@ class DivisionsController extends Controller
     public function index()
     {
         $divisions = Division::all();
-        return response()->json([
-            'success' => true,
-            'data' => $divisions
-        ]);
+        return $divisions;
     }
 
     /**
@@ -47,7 +41,7 @@ class DivisionsController extends Controller
     {
        $division = Division::create($request->validated());
 
-        return response()->json($division, 201);
+        return $division;
     }
 
     /**
@@ -60,7 +54,7 @@ class DivisionsController extends Controller
 
         $division->update($request->only(['division_name', 'manager_full_name']));
 
-        return response()->json($division,201);
+        return $division;
     }
 
     /**
@@ -71,25 +65,12 @@ class DivisionsController extends Controller
         $division = Division::find($id);
 
         if (!$division) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Подразделение не найдено'
-            ], 404);
-        }
-
-        // Проверяем, есть ли сотрудники в этом подразделении
-        if ($division->employees()->count() > 0) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Нельзя удалить подразделение, в котором есть сотрудники'
-            ], 400);
+           throw new NotFoundHttpException('Не найдено');
         }
 
         $division->delete();
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Подразделение успешно удалено'
-        ]);
+        return $division;
+        
     }
 }
