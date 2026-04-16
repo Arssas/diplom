@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\EventTypes;
 use App\Http\Requests\Events\EventsStoreRequest;
 use App\Models\Events;
 use App\Http\Requests\Events\EventsUpdateRequest;
@@ -17,7 +16,6 @@ class EventsController extends Controller
     {
         $event = Events::all();
         return $event;
-        
     }
 
     /**
@@ -28,11 +26,10 @@ class EventsController extends Controller
         $event = Events::find($id);
         
         if (!$event) {
-            throw new NotFoundHttpException("событие не найдено");
+            throw new NotFoundHttpException("Not found");
         }
 
         return $event;
-
     }
 
     /**
@@ -41,7 +38,6 @@ class EventsController extends Controller
     public function store(EventsStoreRequest $request)
     {
         $event = Events::create($request->validated());
-
         return $event;
     }
 
@@ -54,10 +50,10 @@ class EventsController extends Controller
         $event = Events::find($id);
 
         if ($event) {
-            throw new NotFoundHttpException("событие не найдено");
+            throw new NotFoundHttpException("Not found");
         }
-        $event->update($request->only(['employee_card_id', 'event_datetime', 'event_type']));
 
+        $event->update($request->only(['employee_card_id', 'event_datetime', 'event_type']));
         return $event;
     }
 
@@ -69,11 +65,10 @@ class EventsController extends Controller
         $event = Events::find($id);
 
         if ($event) {
-            throw new NotFoundHttpException("событие не найдено");
+            throw new NotFoundHttpException("Not found");
         }
 
         $event->delete();
-
         return $event;
     }
 }

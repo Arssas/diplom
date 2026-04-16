@@ -28,7 +28,7 @@ class DivisionsController extends Controller
         $division = Division::find($id);
         
         if (!$division) {
-            throw new NotFoundHttpException("Not found ex");
+            throw new NotFoundHttpException("Not found");
         }
 
         return $division;
@@ -65,7 +65,7 @@ class DivisionsController extends Controller
         $division = Division::find($id);
 
         if (!$division) {
-           throw new NotFoundHttpException('Не найдено');
+           throw new NotFoundHttpException('Not found');
         }
 
         $division->delete();

@@ -11,73 +11,65 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 class EmployeeController extends Controller
 {
     /**
-     * Получить список всех событий
+     * Получить список всех сотрудников
      */
     public function index()
     {
         $employee = Employee::all();
         return $employee;
-        
     }
 
     /**
-     * Получить информацию о конкретном событии
+     * Получить информацию о конкретном сотруднике
      */
     public function show($id)
     {
         $employee = Employee::find($id);
         
         if (!$employee) {
-            throw new NotFoundHttpException("Сотрудник не найден");
+            throw new NotFoundHttpException("Not found");
         }
 
         return $employee;
-
     }
 
     /**
-     * Создать новое сбытие
+     * Создать нового сотрудника
      */
     public function store(EmployeeStoreRequest $request)
     {
         $employee = Employee::create($request->validated());
-
         return $employee;
     }
 
     /**
-     * Обновить информацию о событии
+     * Обновить информацию о сотруднике
      */
     public function update(EmployeeUpdateRequest $request )
     {
-        
         $id = $request->route("id");
-        
         $employee = Employee::find($id);
 
          if (!$employee) {
-            throw new NotFoundHttpException("Сотрудник не найден");
+            throw new NotFoundHttpException("Not found");
         }
         
         $employee->update($request->only(['employee_card_id', 'full_name', 'phone_number', 'position', 'division_id']));
-
-        
         return $employee;
     }
 
     /**
-     * Удалить событие
+     * Удалить сотрудника
      */
     public function destroy($id)
     {
         $employee = Employee::find($id);
 
         if (!$employee) {
-            throw new NotFoundHttpException("Сотрудник не найден");
+            throw new NotFoundHttpException("Not found");
         }
 
         $employee->delete();
-
         return $employee;
     }
 }
