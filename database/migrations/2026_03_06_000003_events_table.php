@@ -20,8 +20,6 @@ return new class extends Migration
                 'exit',         // Выход
                 'break_start',  // Начало перерыва
                 'break_end',    // Конец перерыва
-                'overtime_start', // Начало сверхурочной работы
-                'overtime_end'    // Конец сверхурочной работы
             ]); // Тип события
             
             $table->timestamps();

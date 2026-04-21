@@ -14,10 +14,10 @@ class EmployeeSeeder extends Seeder
      */
     public function run(): void
     {
-        Division::factory(5)->create();
+        Division::factory(2)->create();
         
         $divisions = Division::all();
-        Employee::factory(50)->make()->each(function ($employee) use ($divisions) {
+        Employee::factory(10)->make()->each(function ($employee) use ($divisions) {
             $employee->division_id = $divisions->random()->id;
             $employee->save();
         });

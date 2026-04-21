@@ -37,7 +37,7 @@ class EventsSeeder extends Seeder
     private function generateEventsForDay(Employee $employee, Carbon $date): void
     {
         $startOfWork = $date->copy()->setTime(9, 0, 0);
-        $endOfWork = $date->copy()->setTime(18, 0, 0);
+        $endOfWork = $date->copy()->setTime(21, 0, 0);
 
         $events = [
             [

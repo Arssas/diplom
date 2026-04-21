@@ -30,7 +30,9 @@ Route::controller(EventsController::class)->prefix('events')->group(function () 
     Route::delete('/{id}','destroy');
 });
 
-Route::controller(ReportsController::class)->prefix('reports')->group(function () {
-    
+Route::controller(ReportsController::class)->group(function () {
+    Route::get('/getStructuredData', 'getStructuredData');
+    Route::get('/getEmployeesStructure', 'getEmployeesStructure');
+    Route::get('/getEventsStructure', 'getEventsStructure');
 });
 
