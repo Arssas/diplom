@@ -37,7 +37,7 @@ class EventsSeeder extends Seeder
     private function generateEventsForDay(Employee $employee, Carbon $date): void
     {
         $startOfWork = $date->copy()->setTime(9, 0, 0);
-        $endOfWork = $date->copy()->setTime(21, 0, 0);
+        $endOfWork = $date->copy()->setTime(18, 0, 0);
 
         $events = [
             [
@@ -74,13 +74,26 @@ class EventsSeeder extends Seeder
             }
         }
 
-        $events[] = [
-            'employee_card_id' => $employee->card_id,
-            'datetime'         => $endOfWork,
-            'type'             => 'exit',
-            'created_at'       => now(),
-            'updated_at'       => now(),
-        ];
+        $hasOvertimeWork = rand(1, 100) <= 15;
+
+        if ($hasOvertimeWork) {
+            $events[] = [
+                'employee_card_id' => $employee->card_id,
+                'datetime'         => $date->copy()->setTime(rand(18, 20), rand(0, 59), 0),
+                'type'             => 'exit',
+                'created_at'       => now(),
+                'updated_at'       => now(),
+            ];    
+        }
+        else {
+            $events[] = [
+                'employee_card_id' => $employee->card_id,
+                'datetime'         => $endOfWork,
+                'type'             => 'exit',
+                'created_at'       => now(),
+                'updated_at'       => now(),
+            ];
+        }
 
         usort($events, function ($a, $b) {
             return $a['datetime'] <=> $b['datetime'];
