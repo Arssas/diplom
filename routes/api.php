@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Divisions\DivisionsController;
 use App\Http\Controllers\Events\EventsController;
 
+
 Route::controller(DivisionsController::class)->prefix('divisions')->group(function () {
     Route::get('/', 'index');
     Route::get('/{id}', 'show');
@@ -31,8 +32,8 @@ Route::controller(EventsController::class)->prefix('events')->group(function () 
 });
 
 Route::controller(ReportsController::class)->group(function () {
-    Route::get('/getStructuredData', 'getStructuredData');
-    Route::get('/getEmployeesStructure', 'getEmployeesStructure');
-    Route::get('/getEventsStructure', 'getEventsStructure');
+    Route::get('/getEmployeeDailyReport/{id}/{date}', 'getEmployeeDailyReport');
+    Route::get('/getWorkedHoursPerMonth/{id}/{year}/{month}', 'getWorkedHoursPerMonth');
+    Route::get('/getOvertimeHoursPerMonth', 'getOvertimeHoursPerMonth');
 });
 
