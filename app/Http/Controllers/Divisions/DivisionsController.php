@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Divisions;
 
 use App\Http\Requests\Division\DivisionStoreRequest;
+use App\Http\Responses\Division\DivisionResponseSingle;
 use App\Models\Division;
 use App\Http\Requests\Division\DivisionUpdateRequest;
 
@@ -17,13 +18,10 @@ class DivisionsController
     public function index()
     {
         $divisions = Division::all();
-        return $divisions;
+        return new $divisions;
     }
 
-    /**
-     * Получить информацию о конкретном подразделении
-     */
-    public function show($id): Division
+    public function show($id)
     {
         $division = Division::find($id);
         
@@ -40,14 +38,13 @@ class DivisionsController
     public function store(DivisionStoreRequest $request)
     {
        $division = Division::create($request->validated());
-
         return $division;
     }
 
     /**
      * Обновить информацию о подразделении
      */
-    public function update(DivisionUpdateRequest $request )
+    public function update(DivisionUpdateRequest $request)
     {
         $id = $request->route("id");
         $division = Division::find($id);

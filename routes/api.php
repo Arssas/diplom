@@ -32,8 +32,8 @@ Route::controller(EventsController::class)->prefix('events')->group(function () 
 });
 
 Route::controller(ReportsController::class)->group(function () {
-    Route::get('/getEmployeeDailyReport/{id}/{date}', 'getEmployeeDailyReport');
-    Route::get('/getWorkedHoursPerMonth/{id}/{year}/{month}', 'getWorkedHoursPerMonth');
-    Route::get('/getOvertimeHoursPerMonth', 'getOvertimeHoursPerMonth');
+    Route::get('/getEmployeeDailyReport/{card_id}/{date}', 'getEmployeeDailyReport');
+    Route::get('/getWorkedHoursPerMonth/{card_id}/{year}/{month}', 'getWorkedHoursPerMonth');
+    Route::get('/getOvertimeHoursPerMonth/{employee_id}/{year}/{month}', 'getOvertimeHoursPerMonth');
 });
 

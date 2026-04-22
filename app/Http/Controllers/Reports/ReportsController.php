@@ -2,9 +2,13 @@
 
 namespace App\Http\Controllers\Reports;
 
+use App\Enums\EventTypes;
+use App\Http\Requests\Reports\ReportHoursPerMonthRequest;
 use App\Models\Division;
 use App\Models\Employee;
 use App\Models\Events;
+use Exception;
+use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -19,17 +23,16 @@ class ReportsController
      */
     public function getEmployeeDailyReport($employee_card_id, $date)
     {
-        // Проверяем формат даты
-        $validator = Validator::make(['date' => $date, 'employee_card_id' => $employee_card_id], [
-            'date' => 'required|date_format:Y-m-d',
-            'employee_card_id' => 'required|string'
-        ]);
-        
+        $validator = Validator::make(
+            compact('date', 'employee_card_id'),
+            [
+                'date' => 'required|date_format:Y-m-d',
+                'employee_card_id' => 'required|string',
+            ]
+        );
+
         if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'errors' => $validator->errors()
-            ], 422);
+            throw new ValidationException($validator);
         }
         
         // Ищем сотрудника
@@ -53,7 +56,7 @@ class ReportsController
         }
 
         // Получаем подразделение сотрудника
-        $division = Division::find($employee->division_id);
+        $division = Division::where('id', $employee->division_id)->first();
         
         // Формируем структурированный ответ
         $result = [
@@ -87,30 +90,22 @@ class ReportsController
      * Задача 2: Посчитать количество отработанных часов за месяц
      * GET /api/report/getWorkedHoursPerMonth/{card_id}/{year}/{month}
      * 
-     * @param int $card_id - ID сотрудника
-     * @param int $year - год (например, 2026)
-     * @param int $month - месяц (1-12)
      */
     public function getWorkedHoursPerMonth($card_id, $year, $month)
     {
-        // Проверяем валидность параметров
-        $validator = Validator::make([
-            'card_id' => $card_id,
-            'year' => $year,
-            'month' => $month
-        ], [
-            'card_id' => 'required|string',
-            'year' => 'required|string',
-            'month' => 'required|string'
-        ]);
-        
+        $validator = Validator::make(
+            compact('card_id', 'year', 'month'),
+            [
+                'card_id' => 'required|string',
+                'year' => 'required|string',
+                'month' => 'required|string',
+            ]
+        );
+
         if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'errors' => $validator->errors()
-            ], 422);
+            throw new ValidationException($validator);
         }
-        
+
         // Ищем сотрудника
         $employee = Employee::where("card_id", $card_id)->first();
         
@@ -148,23 +143,26 @@ class ReportsController
                 'worked_hours' => round($dayResult['hours'], 2),
                 'worked_minutes' => $dayResult['minutes'],
                 'first_entry' => $dayResult['first_entry'],
-                'last_exit' => $dayResult['last_exit']
+                'last_exit' => $dayResult['last_exit'],
+                'breakdown' => $dayResult['breakdown']
             ];
             $totalWorkedSeconds += $dayResult['seconds'];
         }
+
         
         $totalWorkedHours = floor($totalWorkedSeconds / 3600);
         $totalWorkedMinutes = floor(($totalWorkedSeconds % 3600) / 60);
         
         // Получаем подразделение сотрудника
-        $division = Division::find($employee->division_id);
+        $division = Division::where('id', $employee->division_id)->first();
+
         
         $result = [
             'employee' => [
                 'id' => $employee->id,
                 'full_name' => $employee->full_name,
                 'position' => $employee->position,
-                'division' => $division ? $division->division_name : null
+                'division' => $division ? $division->name : null
             ],
             'period' => [
                 'year' => $year,
@@ -180,7 +178,7 @@ class ReportsController
                 'days_worked' => count($dailyHours),
                 'total_days_in_month' => date('t', strtotime($startDate))
             ],
-            'daily_breakdown' => $dailyHours
+            'daily' => $dailyHours
         ];
         
         return $result;
@@ -196,25 +194,19 @@ class ReportsController
      */
     public function getOvertimeHoursPerMonth($employee_id, $year, $month)
     {
-        // Проверяем валидность параметров
-        $validator = Validator::make([
-            'employee_id' => $employee_id,
-            'year' => $year,
-            'month' => $month
-        ], [
-            'employee_id' => 'required|integer|exists:employees,employee_id',
-            'year' => 'required|integer|min:2000|max:2100',
-            'month' => 'required|integer|min:1|max:12'
-        ]);
-        
+        $validator = Validator::make(
+            compact('employee_id', 'year', 'month'),
+            [
+                'employee_id' => 'required|string',
+                'year' => 'required|string',
+                'month' => 'required|string',
+            ]
+        );
+
         if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'errors' => $validator->errors()
-            ], 422);
+            throw new ValidationException($validator);
         }
         
-        // Ищем сотрудника
         $employee = Employee::find($employee_id);
         
         if (!$employee) {
@@ -271,14 +263,14 @@ class ReportsController
         $registeredOvertimeSeconds = $this->calculateOvertimeFromEvents($overtimeEvents);
         $registeredOvertimeHours = $registeredOvertimeSeconds / 3600;
         
-        $division = Division::find($employee->division_id);
+        $division = Division::where('id', $employee->division_id)->first();
         
         $result = [
             'employee' => [
                 'id' => $employee->id,
                 'full_name' => $employee->full_name,
                 'position' => $employee->position,
-                'division' => $division ? $division->division_name : null
+                'division' => $division ? $division->name : null
             ],
             'period' => [
                 'year' => $year,
@@ -297,10 +289,7 @@ class ReportsController
             'daily_breakdown' => $dailyOvertime
         ];
         
-        return response()->json([
-            'success' => true,
-            'data' => $result
-        ]);
+        return $result;
     }
     
     /**
@@ -331,41 +320,48 @@ class ReportsController
      */
     private function calculateDailyWorkedHours($dayEvents)
     {
-        $seconds = 0;
-        $lastEntryTime = null;
-        $firstEntry = null;
-        $lastExit = null;
+        $entryTime = null;
+        $breakdownStartTime = null;
+        $breakdownEndTime = null;
+        $exitTime = null;
         
         foreach ($dayEvents as $event) {
-            $eventTime = strtotime($event->datetime);
-            
-            if ($event->type === 'entry') {
-                $lastEntryTime = $eventTime;
-                if (!$firstEntry) {
-                    $firstEntry = $event->datetime;
-                }
-            } elseif ($event->type === 'exit' && $lastEntryTime) {
-                $seconds += ($eventTime - $lastEntryTime);
-                $lastExit = $event->datetime;
-                $lastEntryTime = null;
-            } elseif ($event->type === 'break_start' && $lastEntryTime) {
-                // Если начался перерыв, вычитаем время из рабочего
-                $lastEntryTime = null;
-            } elseif ($event->type === 'break_end') {
-                // Перерыв закончился, начинаем снова учитывать время
-                $lastEntryTime = $eventTime;
+            if ($event->type === EventTypes::Entry->value) {
+                $entryTime = strtotime($event->datetime);
+            }
+            elseif ($event->type === EventTypes::BreakStart->value) {
+                $breakdownStartTime = strtotime($event->datetime);
+            }
+            elseif ($event->type === EventTypes::BreakEnd->value) {
+                $breakdownEndTime = strtotime($event->datetime);
+            }
+            elseif ($event->type === EventTypes::Exit->value) {
+                $exitTime = strtotime($event->datetime);
             }
         }
         
+        $seconds = null;
+
+        if ($entryTime) {
+            $seconds = $exitTime - $entryTime - ($breakdownEndTime - $breakdownStartTime);
+        }
+        else {
+            $seconds = $exitTime - $entryTime;
+        }
+
         $hours = $seconds / 3600;
         $minutes = floor($seconds / 60);
-        
+
         return [
             'seconds' => $seconds,
             'minutes' => $minutes,
             'hours' => $hours,
-            'first_entry' => $firstEntry ? date('H:i:s', strtotime($firstEntry)) : null,
-            'last_exit' => $lastExit ? date('H:i:s', strtotime($lastExit)) : null
+            'first_entry' => $entryTime ? date('H:i:s', $entryTime) : null,
+            'last_exit' => $exitTime ? date('H:i:s', $exitTime) : null,
+            'breakdown' => [
+                'breakdown_start' => $breakdownStartTime ? date('H:i:s', $breakdownStartTime) : null,
+                'breakdown_end' => $breakdownEndTime ? date('H:i:s', $breakdownEndTime) : null,
+            ]
         ];
     }
     
